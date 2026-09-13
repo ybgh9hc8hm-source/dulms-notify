@@ -1,0 +1,1 @@
+ALTER TABLE public.registration_watches ADD COLUMN IF NOT EXISTS auto_register boolean NOT NULL DEFAULT true;

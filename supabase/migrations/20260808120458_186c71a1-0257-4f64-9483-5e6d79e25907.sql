@@ -1,0 +1,1 @@
+ALTER TABLE public.dulms_accounts ADD COLUMN IF NOT EXISTS profile jsonb;

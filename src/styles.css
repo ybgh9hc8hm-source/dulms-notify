@@ -1,0 +1,548 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * DULMS Notify — Apple Human Interface Guidelines design system.
+ *
+ * Grounded in Apple's actual system definitions (dark appearance):
+ *  - Color: system colors (systemBlue #0A84FF, systemGreen #30D158, ...) and
+ *    label hierarchy (label / secondaryLabel 60% / tertiaryLabel 30%).
+ *  - Backgrounds: base #000, elevated/grouped #1C1C1E, #2C2C2E, #3A3A3C.
+ *  - Materials: translucent blur (thin / regular / thick) over content.
+ *  - Separators: hairline (0.5pt) opaqueSeparator-like value.
+ *  - Shape: continuous corner radii — 10 (control), 14 (card), 22 (sheet).
+ *  - Type: SF Pro text styles, tight optical tracking on large sizes.
+ *  - Depth: almost no shadow; hierarchy comes from material + elevation.
+ *
+ * Never hardcode colors in components — use these tokens.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 14px);
+  --radius-4xl: calc(var(--radius) + 22px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-tint-warm: var(--tint-warm);
+  --color-tint-mint: var(--tint-mint);
+  --color-tint-sky: var(--tint-sky);
+  --color-tint-plum: var(--tint-plum);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  /* Apple control radius baseline (10pt); cards/sheets derive from it. */
+  --radius: 0.75rem;
+
+  /* Backgrounds — Apple dark appearance elevation ladder */
+  --background: #0b0b0c;
+  --surface-1: #161617;
+  --surface-2: #1f1f21;
+  --surface-3: #2c2c2e;
+
+  /* Labels */
+  --foreground: #ececf1;
+  --label-secondary: rgba(235, 235, 245, 0.6);
+  --label-tertiary: rgba(235, 235, 245, 0.3);
+
+  --card: var(--surface-1);
+  --card-foreground: var(--foreground);
+  --popover: rgba(38, 38, 40, 0.86);
+  --popover-foreground: var(--foreground);
+
+  /* System colors — steel-blue accent breaking the monochrome base */
+  --primary: #5f82a6; /* steel blue, derived from #41586e */
+  --primary-foreground: #f2f6fa;
+  --accent: #41586e;
+  --accent-foreground: #f2f6fa;
+  --success: #30d158; /* systemGreen */
+  --warning: #ff9f0a; /* systemOrange */
+  --destructive: #ff453a; /* systemRed */
+  --destructive-foreground: #ffffff;
+
+  --secondary: rgba(120, 120, 128, 0.24); /* fill.secondary */
+  --secondary-foreground: var(--foreground);
+  --muted: rgba(120, 120, 128, 0.18); /* fill.tertiary */
+  --muted-foreground: var(--label-secondary);
+
+  /* Hairline separator — Apple uses 0.5pt at low contrast */
+  --border: rgba(84, 84, 88, 0.65);
+  --input: rgba(120, 120, 128, 0.28);
+  --ring: rgba(95, 130, 166, 0.55);
+
+  /* Materials */
+  --material-thin: rgba(22, 22, 23, 0.62);
+  --material-regular: rgba(22, 22, 23, 0.78);
+  --material-thick: rgba(14, 14, 15, 0.92);
+  --material-blur: saturate(180%) blur(30px);
+
+  /* Restrained accent tints — used in small doses (icons, dots, washes) */
+  --tint-warm: #a8b6c6;
+  --tint-mint: #8fa7bd;
+  --tint-sky: #6f93b6;
+  --tint-plum: #7d8fa8;
+
+  /* Soft steel-blue ambient wash so the page never reads as flat two-tone */
+  --surface-glow:
+    radial-gradient(64rem 36rem at 50% -12%, rgba(95, 130, 166, 0.16), transparent 64%),
+    radial-gradient(40rem 26rem at 92% 8%, rgba(65, 88, 110, 0.12), transparent 70%);
+
+  --shadow-card: 0 1px 0 0 rgba(255, 255, 255, 0.04) inset;
+  --shadow-raised: 0 10px 30px -18px rgba(0, 0, 0, 0.9);
+  --shadow-ai-glow:
+    0 0 0 1px color-mix(in oklab, var(--primary) 32%, transparent),
+    0 0 18px color-mix(in oklab, var(--primary) 38%, transparent),
+    0 0 34px color-mix(in oklab, var(--primary) 18%, transparent);
+  --shadow-automation-glow:
+    0 0 0 1px color-mix(in oklab, var(--success) 24%, transparent),
+    0 0 16px color-mix(in oklab, var(--success) 28%, transparent);
+
+  /* Typography — SF Pro on Apple devices, Inter (closest metric match) elsewhere */
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter",
+    "IBM Plex Sans Arabic", "Helvetica Neue", ui-sans-serif, system-ui, sans-serif;
+  --font-display:
+    -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter Tight", "Inter",
+    "IBM Plex Sans Arabic", "Helvetica Neue", ui-sans-serif, system-ui, sans-serif;
+  --font-arabic:
+    "SF Arabic", -apple-system, BlinkMacSystemFont, "IBM Plex Sans Arabic", "Inter",
+    ui-sans-serif, system-ui, sans-serif;
+
+  --chart-1: #5f82a6;
+  --chart-2: #30d158;
+  --chart-3: #ff9f0a;
+  --chart-4: #bf5af2;
+  --chart-5: #8e8e93;
+
+  /* Sidebar = sidebar material over base */
+  --sidebar: var(--material-regular);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: #5f82a6;
+  --sidebar-primary-foreground: #f2f6fa;
+  --sidebar-accent: rgba(95, 130, 166, 0.18);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: rgba(84, 92, 104, 0.55);
+  --sidebar-ring: rgba(95, 130, 166, 0.5);
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    color-scheme: dark;
+    -webkit-tap-highlight-color: transparent;
+    /* No rubber-band overscroll or bounce out of the viewport. */
+    overscroll-behavior: none;
+  }
+
+  body {
+    overscroll-behavior: none;
+    /* Panning only — pinch-zoom and double-tap zoom are disabled. */
+    touch-action: pan-x pan-y;
+    background-color: var(--color-background);
+    background-image: var(--surface-glow);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    /* SF-style optical settings */
+    font-feature-settings: "case", "ss01";
+    font-size: 1.0625rem; /* 17pt body */
+    letter-spacing: -0.011em;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  :where([dir="rtl"]) body,
+  :where([lang="ar"]) {
+    font-family: var(--font-arabic);
+    letter-spacing: 0;
+    line-height: 1.75;
+  }
+
+  /* Apple type scale: tighter tracking as size grows */
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1.16;
+  }
+
+  h1 {
+    letter-spacing: -0.028em;
+  }
+
+  h2 {
+    letter-spacing: -0.024em;
+  }
+
+  h3,
+  h4 {
+    letter-spacing: -0.018em;
+  }
+
+  :where([dir="rtl"]) h1,
+  :where([dir="rtl"]) h2,
+  :where([dir="rtl"]) h3,
+  :where([dir="rtl"]) h4 {
+    font-family: var(--font-arabic);
+    letter-spacing: 0;
+    line-height: 1.4;
+  }
+
+  /* Numerals in data-dense UI align like SF's tabular figures */
+  table,
+  dd,
+  time,
+  [data-numeric] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /*
+   * Bidirectional text readability.
+   */
+  :where(p, h1, h2, h3, h4, h5, h6, li, dd, dt, td, th, label, figcaption, blockquote, summary) {
+    unicode-bidi: plaintext;
+    text-align: inherit;
+  }
+
+  span,
+  a,
+  strong,
+  em,
+  b,
+  i,
+  small,
+  code,
+  time,
+  abbr,
+  badge {
+    unicode-bidi: isolate;
+  }
+
+  input,
+  textarea {
+    unicode-bidi: plaintext;
+    text-align: start;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-primary) 35%, transparent);
+  }
+
+  /* Apple focus ring: a soft outer halo, never a hard box */
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-primary) 35%, transparent);
+    border-radius: var(--radius-md);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+/* ---------- Apple text styles ---------- */
+
+@utility text-large-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 6vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+@utility text-title-1 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.18;
+}
+
+@utility text-title-3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+}
+
+@utility text-headline {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+}
+
+@utility text-subhead {
+  font-size: 0.9375rem;
+  letter-spacing: -0.006em;
+  color: var(--color-muted-foreground);
+}
+
+@utility text-footnote {
+  font-size: 0.8125rem;
+  letter-spacing: 0;
+  color: var(--color-muted-foreground);
+}
+
+@utility text-caption {
+  font-size: 0.75rem;
+  letter-spacing: 0.004em;
+  color: var(--color-muted-foreground);
+}
+
+/* ---------- Materials & surfaces ---------- */
+
+@utility material-thin {
+  background-color: var(--material-thin);
+  backdrop-filter: var(--material-blur);
+  -webkit-backdrop-filter: var(--material-blur);
+}
+
+@utility material-regular {
+  background-color: var(--material-regular);
+  backdrop-filter: var(--material-blur);
+  -webkit-backdrop-filter: var(--material-blur);
+}
+
+@utility material-thick {
+  background-color: var(--material-thick);
+  backdrop-filter: var(--material-blur);
+  -webkit-backdrop-filter: var(--material-blur);
+}
+
+@utility text-brand-gradient {
+  color: var(--color-primary);
+}
+
+/* Grouped-content card (UITableView inset grouped) */
+@utility card-elevated {
+  background-color: var(--surface-1);
+  border: 0.5px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+}
+
+@utility glass-panel {
+  background-color: var(--material-regular);
+  backdrop-filter: var(--material-blur);
+  -webkit-backdrop-filter: var(--material-blur);
+  border-color: var(--color-sidebar-border);
+  box-shadow: var(--shadow-raised);
+}
+
+/* Inset grouped list: rows separated by hairlines, rounded container */
+@utility list-inset {
+  background-color: var(--surface-1);
+  border: 0.5px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+@utility list-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 44px; /* HIG minimum hit target */
+  padding: 0.6875rem 1rem;
+  border-bottom: 0.5px solid var(--color-border);
+}
+
+@utility hairline {
+  border-color: var(--color-border);
+  border-width: 0.5px;
+}
+
+/* Press feedback like UIKit's highlight */
+@utility press {
+  transition:
+    transform 180ms cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 180ms ease,
+    background-color 180ms ease;
+}
+
+@keyframes social-link-rise {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+@utility social-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 0.55rem;
+  border: 0.5px solid var(--color-border);
+  border-radius: 9999px;
+  background: var(--surface-1);
+  padding: 0.65rem 1rem;
+  color: var(--color-foreground);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-raised);
+  transition: color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+  animation: social-link-rise 3.6s ease-in-out infinite;
+}
+
+@media (hover: hover) {
+  .social-link:hover {
+    color: var(--color-primary);
+    border-color: color-mix(in oklab, var(--color-primary) 42%, var(--color-border));
+    box-shadow: var(--shadow-floating);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .social-link { animation: none; }
+}
+
+/* Live feature icons: precise, functional motion with a restrained signal glow. */
+@keyframes feature-icon-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: brightness(1) drop-shadow(0 0 0 transparent);
+  }
+  50% {
+    transform: scale(1.04);
+    filter: brightness(1.2) drop-shadow(0 0 4px currentColor);
+  }
+}
+
+@keyframes feature-icon-halo {
+  0%,
+  100% {
+    opacity: 0.34;
+    transform: scale(0.88);
+  }
+  50% {
+    opacity: 0;
+    transform: scale(1.32);
+  }
+}
+
+@keyframes feature-status-ping {
+  75%,
+  100% {
+    opacity: 0;
+    transform: scale(2.35);
+  }
+}
+
+@utility feature-icon-live {
+  position: relative;
+  isolation: isolate;
+  color: var(--color-primary);
+  background: color-mix(in oklab, var(--color-primary) 14%, var(--surface-2));
+  box-shadow: var(--shadow-ai-glow);
+}
+
+@utility feature-icon-automation {
+  position: relative;
+  isolation: isolate;
+  color: var(--color-success);
+  background: color-mix(in oklab, var(--color-success) 10%, var(--surface-2));
+  box-shadow: var(--shadow-automation-glow);
+}
+
+@utility feature-icon-glyph {
+  animation: feature-icon-breathe 3.2s ease-in-out infinite;
+  transform-origin: center;
+  will-change: transform, filter;
+}
+
+@utility feature-icon-ring {
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  border: 1px solid currentColor;
+  animation: feature-icon-halo 3.2s ease-out infinite;
+  pointer-events: none;
+}
+
+@utility feature-status-dot {
+  position: absolute;
+  inset-block-start: -2px;
+  inset-inline-end: -2px;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 9999px;
+  background: var(--color-success);
+  box-shadow: 0 0 8px color-mix(in oklab, var(--color-success) 72%, transparent);
+}
+
+@utility feature-status-ping {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  animation: feature-status-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@utility ai-core-video {
+  background: transparent;
+}
+
+/* Hosting-platform badge injected at runtime — hidden on the public site. */
+#lovable-badge {
+  display: none !important;
+}
+
+/* Telegram Mini App: Telegram overlays its own header/handle at the top. */
+html.tg-miniapp body {
+  padding-top: env(safe-area-inset-top, 0px);
+  overscroll-behavior-y: none;
+}

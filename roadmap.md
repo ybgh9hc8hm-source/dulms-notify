@@ -1,0 +1,28 @@
+# Roadmap
+
+- [x] Reorganize monitored groups into clear mobile cards.
+- [x] Separate automatic registration, manual confirmation, and delete actions.
+- [x] Show readable watch states and the latest result.
+- [x] Keep manual CAPTCHA confirmation as the safe fallback.
+- [x] Keep offered courses before the registration summary.
+- [x] Verify mobile width, layout safety, and automated checks.
+- [x] Reload a fresh CAPTCHA after a rejected manual attempt.
+- [x] Retry automatic CAPTCHA registration in bounded batches with backoff.
+- [x] Prevent concurrent submissions for the same monitored group.
+- [x] Move the support assistant onto the Lovable AI Gateway (openai/gpt-6-astra) with OpenRouter as fallback only.
+- [x] Give the assistant tool access to all of the student's own portal data.
+- [x] Let the assistant perform actions: watch a group, stop a watch, toggle auto registration, sync now, open a ticket.
+- [x] Inject product knowledge (domain, sync, notifications, registration/CAPTCHA rules) into the assistant.
+- [x] Treat lecture and section as one atomic registration choice and require both to be open.
+- [x] Make web, Telegram, AI, manual confirmation, and automatic registration use the same paired-group validation.
+- [x] Verify the complete paired registration lifecycle with regression tests.
+- [x] Prevent bulk administrator credential exposure and audit explicit password reveals.
+- [x] Add revocable, one-day administrator sessions and server-side logout.
+- [x] Enforce registration capacity atomically with admission reservations.
+- [x] Bound AI tool loops and CAPTCHA vision attempts; make fallback action claims safe.
+- [x] Improve Telegram polling/localization, support-panel direction, and GPA refresh behavior.
+- [x] Correct the landing-page copy to match the current product behavior without changing its image.
+- [x] Add developer copyright, animated social/contact links, and WhatsApp contacts.
+- [x] Add bilingual usage/privacy policies and require account-recorded acceptance before sign-in.
+- [x] Add the requested visual-only Cloudflare-style human verification control.
+- [x] Re-audit every landing-page claim against the implemented product and rewrite the Arabic and English copy.

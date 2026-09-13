@@ -1,0 +1,1 @@
+UPDATE public.app_settings SET value = '{"open":true,"seats":50,"closedMessage":"التسجيل مغلق حاليًا — الدخول متاح فقط للحسابات المسجّلة مسبقًا"}' WHERE key = 'registration';

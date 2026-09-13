@@ -1,0 +1,26 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "src/server.ts",
+    "src/start.ts",
+    "src/router.tsx",
+    "src/routes/**/*.{ts,tsx}",
+    "src/**/*.test.ts"
+  ],
+  "project": [
+    "src/**/*.{ts,tsx}"
+  ],
+  "ignore": [
+    "src/components/ui/**",
+    "src/components/ai-elements/**",
+    "src/integrations/**"
+  ],
+  "ignoreDependencies": [
+    "@lovable.dev/cloud-auth-js",
+    "@tanstack/router-plugin",
+    "tailwindcss",
+    "tw-animate-css"
+  ],
+  "ignoreExportsUsedInFile": true,
+  "includeEntryExports": false
+}
