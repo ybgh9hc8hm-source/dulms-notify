@@ -28,9 +28,34 @@ export function parseWatchCallbackData(
 
 function buttonText(option: RegistrationOption): string {
   const seats = option.blocked ? "مغلق" : option.free > 0 ? `${option.free} مقعد` : "ممتلئ";
-  const head = [option.courseCode ?? option.courseName, option.label].filter(Boolean).join(" — ");
+  const head = option.label;
   const text = `${head} • ${seats}`;
   return text.length > 62 ? `${text.slice(0, 61)}…` : text;
+}
+
+export interface RegistrationChoiceGroup {
+  courseId: string;
+  label: string;
+  options: RegistrationOption[];
+}
+
+/** Keeps each course's choices together instead of mixing every lecture in one list. */
+export function groupRegistrationChoices(
+  options: readonly RegistrationOption[],
+): RegistrationChoiceGroup[] {
+  const groups = new Map<string, RegistrationChoiceGroup>();
+  for (const option of registrationSelections(options)) {
+    const current = groups.get(option.courseId);
+    if (current) current.options.push(option);
+    else {
+      groups.set(option.courseId, {
+        courseId: option.courseId,
+        label: [option.courseCode, option.courseName].filter(Boolean).join(" — "),
+        options: [option],
+      });
+    }
+  }
+  return [...groups.values()].sort((a, b) => a.label.localeCompare(b.label));
 }
 
 /** One button per group, open ones first, capped so Telegram accepts the markup. */

@@ -1,6 +1,39 @@
 import type { ScrapedItem } from "../dulms.server";
 import type { RegistrationOption } from "../dulms/registration";
 
+type RegistrationSnapshotItem = Pick<
+  ScrapedItem,
+  "kind" | "externalKey" | "course" | "status" | "extra"
+>;
+
+function snapshotItems(value: unknown): RegistrationSnapshotItem[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((entry): entry is RegistrationSnapshotItem => {
+    if (!entry || typeof entry !== "object") return false;
+    const item = entry as Record<string, unknown>;
+    return typeof item["kind"] === "string" && typeof item["externalKey"] === "string";
+  });
+}
+
+function isOpenCourse(item: Pick<RegistrationSnapshotItem, "kind" | "status">): boolean {
+  return item.kind === "courseOffer" && item.status === "Open for registration";
+}
+
+/** Courses that changed from unavailable (or absent) to ready for registration. */
+export function newlyOpenedCourses(
+  previousSnapshot: unknown,
+  currentItems: readonly ScrapedItem[],
+): ScrapedItem[] {
+  const previous = new Map(
+    snapshotItems(previousSnapshot).map((item) => [`${item.kind}:${item.externalKey}`, item]),
+  );
+  return currentItems.filter((item) => {
+    if (!isOpenCourse(item)) return false;
+    const before = previous.get(`${item.kind}:${item.externalKey}`);
+    return !before || !isOpenCourse(before);
+  });
+}
+
 function fnv1a(payload: string): string {
   let hash = 0x811c9dc5;
   for (let i = 0; i < payload.length; i++) {
@@ -21,6 +54,7 @@ export async function sendImmediateRegistrationAlert(
   _signature: string,
   items: readonly ScrapedItem[],
   options: readonly RegistrationOption[] = [],
+  previousSnapshot: unknown = [],
 ): Promise<number> {
   const summary = items.find((item) => item.kind === "registration");
   if (!summary) return 0;
@@ -44,6 +78,26 @@ export async function sendImmediateRegistrationAlert(
     .eq("dedupe_key", dedupeKey)
     .maybeSingle();
   if (seen) return 0;
+
+  const openedCourses = newlyOpenedCourses(previousSnapshot, items);
+  const { sendTelegramToUser } = await import("../telegram.server");
+  for (const course of openedCourses) {
+    const courseId = course.extra["_courseId"];
+    const readyGroups = options.filter(
+      (option) => option.courseId === courseId && !option.blocked && option.free > 0,
+    ).length;
+    const courseName = course.course ?? course.title;
+    await sendTelegramToUser(
+      userId,
+      [
+        "🟢 <b>مادة فتحت للتسجيل</b>",
+        `<b>${(await import("../telegram.server")).escapeHtml(courseName)}</b>`,
+        readyGroups > 0
+          ? `${readyGroups} ${readyGroups === 1 ? "اختيار متاح الآن" : "اختيارات متاحة الآن"}`
+          : "متاحة للتسجيل الآن",
+      ].join("\n"),
+    );
+  }
 
   const body = formatMessage({ category, context, detail, time: nowLine() }, config);
   const { enqueuePushes, flushNow } = await import("../notify/outbox.server");
@@ -77,9 +131,10 @@ export async function sendRegistrationChoiceButtons(
   options: readonly RegistrationOption[],
 ): Promise<void> {
   if (options.length === 0) return;
-  const { registrationChoiceKeyboard } = await import("../telegram/registration-buttons");
-  const keyboard = registrationChoiceKeyboard(options);
-  if (keyboard.length === 0) return;
+  const { groupRegistrationChoices, registrationChoiceKeyboard } =
+    await import("../telegram/registration-buttons");
+  const groups = groupRegistrationChoices(options);
+  if (groups.length === 0) return;
 
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data: account } = await supabaseAdmin
@@ -93,7 +148,15 @@ export async function sendRegistrationChoiceButtons(
   const { sendTelegramMessage } = await import("../telegram.server");
   await sendTelegramMessage(
     chatId,
-    "اختر الجروب اللي عايز تتسجل فيه — لو مفتوح هيتسجل فورًا، ولو مقفول هستنى وأسجلك أول ما يفتح.",
-    keyboard,
+    "اختر المادة ثم المجموعة المناسبة. كل مادة مرتبة في رسالة منفصلة لتسهيل الاختيار.",
   );
+  for (const group of groups) {
+    const keyboard = registrationChoiceKeyboard(group.options);
+    if (keyboard.length === 0) continue;
+    await sendTelegramMessage(
+      chatId,
+      `<b>${group.label}</b>\nاختر المجموعة — لو متاحة هيتسجل طلبك فورًا، ولو مقفولة هتتراقب لحد ما تفتح.`,
+      keyboard,
+    );
+  }
 }
