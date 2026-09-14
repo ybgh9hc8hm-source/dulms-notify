@@ -218,19 +218,17 @@ function CourseOfferCard({
             </p>
           )}
         </div>
-        {(details.length > 0 || options.length > 0) && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            aria-label={open ? "Hide details" : "Show details"}
-            aria-expanded={open}
-            onClick={() => setOpen((value) => !value)}
-            className="shrink-0 text-muted-foreground"
-          >
-            <ChevronDown className={`transition-transform ${open ? "rotate-180" : ""}`} />
-          </Button>
-        )}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          aria-label={open ? "Hide details" : "Show details"}
+          aria-expanded={open}
+          onClick={() => setOpen((value) => !value)}
+          className="shrink-0 text-muted-foreground"
+        >
+          <ChevronDown className={`transition-transform ${open ? "rotate-180" : ""}`} />
+        </Button>
       </div>
       {isRegistered && courseId && (
         <div className="ms-5 mt-2 flex flex-wrap items-center gap-2">
@@ -395,6 +393,11 @@ function CourseOfferCard({
           })}
           {result && <p className="text-[11px] text-muted-foreground">{result}</p>}
         </div>
+      )}
+      {open && details.length === 0 && options.length === 0 && (
+        <p className="ms-5 mt-3 border-s border-border/60 ps-3 text-xs text-muted-foreground">
+          Course groups are being refreshed from DULMS.
+        </p>
       )}
     </article>
   );
