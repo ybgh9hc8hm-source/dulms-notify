@@ -26,3 +26,5 @@
 - [x] Add bilingual usage/privacy policies and require account-recorded acceptance before sign-in.
 - [x] Add the requested visual-only Cloudflare-style human verification control.
 - [x] Re-audit every landing-page claim against the implemented product and rewrite the Arabic and English copy.
+- [x] Notify each newly opened course before the registration total in Telegram.
+- [x] Group Telegram registration buttons by course with shorter readable labels.

@@ -265,6 +265,7 @@ async function runCheck(account: Account, intervalSeconds: number): Promise<Hear
         registration.signature,
         registration.items,
         registration.options,
+        account.last_registration_snapshot,
       );
       await syncUser(userId, { suppressRegistrationNotifications: true });
       return finish("synced", requests + 2, {
